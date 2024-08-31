@@ -1,16 +1,16 @@
 package yj.common.app.service.student;
 
+import com.alibaba.fastjson2.JSONObject;
+import org.springframework.beans.PropertyEditorRegistrySupport;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import yj.common.app.dao.student.StudentRepository;
 import yj.common.app.entity.student.Student;
 
 import java.time.LocalDate;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * @Model: 应用 -
@@ -24,7 +24,16 @@ public class StudentService {
     @Autowired
     private StudentRepository studentRepository;
 
+    @Autowired
+    private RedisTemplate<String, String> redisTemplate;
+
     public List<Student> getStudents() {
+        Boolean aa = redisTemplate.hasKey("AA");
+        if (aa) {
+            String studentStr = redisTemplate.opsForValue().get("AA");
+            Student student = JSONObject.parseObject(studentStr, Student.class);
+            return Collections.singletonList(student);
+        }
         return studentRepository.findAll();
     }
 
@@ -33,6 +42,8 @@ public class StudentService {
         if (studentOptional.isPresent()) {
             throw new IllegalStateException("email taken");
         }
+        String studentStr = JSONObject.toJSONString(student);
+        redisTemplate.opsForValue().set("AA", studentStr);
         studentRepository.save(student);
     }
 
