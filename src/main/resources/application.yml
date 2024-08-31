@@ -1,0 +1,24 @@
+spring:
+  # redis 配置
+  data:
+    redis:
+      host: 192.168.10.75
+      port: 6379
+      password: 123456
+      pool:
+        max-active: 100
+        max-idle: 10
+        max-wait: -1
+  datasource:
+    url: jdbc:postgresql://localhost:5432/student
+    username: test
+    password: 123456
+
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: create-drop
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
